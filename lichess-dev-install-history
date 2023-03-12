@@ -1,0 +1,65 @@
+sudo apt install git
+sudo apt install gcc
+sudo apt install g++
+sudo snap install emacs --classic
+sudo apt install gnome-tweaks
+sudo apt install openjdk-19-jre-headless
+echo curl -fL "https://github.com/coursier/launchers/raw/master/cs-x86_64-pc-linux.gz" | gzip -d > cs
+sudo apt install curl
+chmod +x cs
+./cs setup
+source ~/.profile
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.3/install.sh | bash
+source ~/.profile  # nvm installs as functions in the shell
+nvm install node
+npm i -g pnpm
+
+sudo apt install redis
+
+# mongoDB
+#
+wget -qO - https://www.mongodb.org/static/pgp/server-6.0.asc | sudo apt-key add - 
+sudo apt-get install gnupg 
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu jammy/mongodb-org/6.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-6.0.list 
+sudo apt-get update 
+sudo apt-get install -y mongodb-org 
+echo "mongodb-org hold" | sudo dpkg --set-selections 
+echo "mongodb-org-database hold" | sudo dpkg --set-selections 
+echo "mongodb-org-server hold" | sudo dpkg --set-selections 
+echo "mongodb-mongosh hold" | sudo dpkg --set-selections 
+echo "mongodb-org-mongos hold" | sudo dpkg --set-selections 
+echo "mongodb-org-tools hold" | sudo dpkg --set-selections 
+sudo systemctl start mongod 
+
+cd
+mkdir git
+cd git
+mkdir lichess
+cd lichess
+git clone --recursive https://github.com/keaaw/lila.git
+cd lila
+mongosh lichess < bin/mongodb/indexes.js 
+ui/build
+cd ..
+git clone https://github.com/lichess-org/lila-ws.git 
+cd lila-ws/
+source ~/.profile
+sbt run -Dcsrf.origin=http://localhost:9663 
+cd ..
+git clone https://github.com/lichess-org/lila-fishnet.git
+cd lila-fishnet/
+sbt run -Dhttp.port=9665
+cd ..
+source ~/.profile 
+git clone --recursive https://github.com/lichess-org/fishnet.git
+cd fishnet/
+sudo apt install cargo
+cargo run -- --endpoint http://localhost:9663/fishnet/
+
+cd ~git/lichess/
+git clone https://github.com/lichess-org/lila-db-seed
+sudo apt install python3-pip
+pip3 install pymongo
+python3 lila-db-seed/spamdb/spamdb.py 
+
+
