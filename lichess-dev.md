@@ -10,14 +10,15 @@ Followed directions in https://github.com/lichess-org/lila/wiki/Lichess-Developm
 
 Detailed system package setup and lichess dev installation: https://github.com/keaaw/howto/blob/main/lichess-dev-install-history
 
-## System setup
-
 You *definitely* need websockets for pretty much everything (if you don't set up websockets, no games will work, nor play against the computer, 
 and you'll always have a red "Reconnecting" in the lower left of the screen)
-
 
 # Running
 all user passwords are "password" by default
 
-You can tweak user passwords in spamdb by editing lichess/lila-db-seed/spamdb/data/uids.txt
+You can tweak user passwords in spamdb by editing lila-db-seed/spamdb/data/uids.txt
+
+## Accessing server from outside system
+The default domain needs to be changed from "localhost" to the IP address of the system running lichess-dev: e.g., "192.168.1.18", otherwords the lichess http handler will redirect to "localhost".
+
 
