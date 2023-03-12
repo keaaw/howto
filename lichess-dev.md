@@ -18,7 +18,15 @@ all user passwords are "password" by default
 
 You can tweak user passwords in spamdb by editing lila-db-seed/spamdb/data/uids.txt
 
-## Accessing server from outside system
-The default domain needs to be changed from "localhost" to the IP address of the system running lichess-dev: e.g., "192.168.1.18", otherwords the lichess http handler will redirect to "localhost".
+## Accessing server from outside systems
+The default domain needs to be changed from "localhost" to the IP address of the system running lichess-dev: e.g., "192.168.1.18", otherwise the lichess http
+handler will redirect to "localhost".
 
+Add these lines at the end of lila/conf/application.conf (use your own IP address where you're running lichess-dev):
 
+net.domain = "192.168.1.18:9663"
+net.socket.domains = [ "192.168.1.18:9664" ]
+
+And lila-ws needs to be run with csrf.origin set to the net.domain:
+
+sbt run -Dcsrf.origin=http://192.168.1.18:9663
