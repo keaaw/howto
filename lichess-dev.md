@@ -8,6 +8,8 @@ Ubuntu is a good distribution, it has most packages.  For this current effort I 
 
 Followed directions in https://github.com/lichess-org/lila/wiki/Lichess-Development-Onboarding
 
+Detailed system package setup and lichess dev installation: https://github.com/keaaw/howto/blob/main/lichess-dev-install-history
+
 ## System setup
 
 You *definitely* need websockets for pretty much everything (if you don't set up websockets, no games will work, nor play against the computer, 
