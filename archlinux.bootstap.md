@@ -34,6 +34,8 @@ https://wiki.archlinux.org/title/GRUB
 
 From these instructions the only part we need is ```# grub-mkconfig -o /boot/grub/grub.cfg```   Copy the main grub menuentry from this new ```/boot/grub/grub.cfg``` to the primary linux's ```/etc/grub.d/40_custom``` and re-run the grub update config command.  Now you should be able to reboot the system and choose the newly installed archlinux and continue system configuration
 
+[archlinux-full-install-grub-menu.md]
+
 ### Enable basic services / networking
 If you included a network manager during the installation process, you should be able to configure and enable it now.  I used [iwd](https://wiki.archlinux.org/title/Iwd#top-page)
 * Remember to enable any installed services, as they typically are not enabled after installation of the package with archlinux!   An enabled systemd service is one that starts automatically on boot.   Staring/stopping and enabling/disabling of services are separate controls in systemd.
