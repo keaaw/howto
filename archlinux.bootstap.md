@@ -15,7 +15,8 @@
   
 <details>
   <summary>Example menuconfig (edit ```/etc/grub.d/40_custom```)</summary>
-  ```
+
+```
   menuentry "archlinux-2023.02.01-x86_64.iso" {
   insmod ext2
   set isofile="/kmw/Downloads/archlinux-2023.02.01-x86_64.iso"
@@ -24,6 +25,7 @@
   initrd (loop)/arch/boot/x86_64/initramfs-linux.img
 }
 ```
+
 </details>
 
 ### Follow the installation guide instructions
@@ -39,7 +41,8 @@ From these instructions the only part we need is ```# grub-mkconfig -o /boot/gru
 
 <details>
   <summary>Example Alphalinux full install grub menuconfig (edit ```/etc/grub.d/40_custom```)</summary>
- ```
+
+```
 menuentry 'Arch Linux' --class arch --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-simple-6792ad20-8fda-493f-ab84-14f8c6146bfc' {
 	load_video
 	set gfxpayload=keep
