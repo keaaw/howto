@@ -37,7 +37,9 @@ system's grub menu.   Don't mount the EFI partition, either, as we're not going 
 
 https://wiki.archlinux.org/title/GRUB  
 
-From these instructions the only part we need is ```# grub-mkconfig -o /boot/grub/grub.cfg```   Copy the main grub menuentry from this new ```/boot/grub/grub.cfg``` to the primary linux's ```/etc/grub.d/40_custom``` and re-run the grub update config command.  Now you should be able to reboot the system and choose the newly installed archlinux and continue system configuration
+From these instructions the only part we need is ```# grub-mkconfig -o /boot/grub/grub.cfg```   Copy the main grub menuentry
+from this new ```/boot/grub/grub.cfg``` to the primary linux's ```/etc/grub.d/40_custom``` and re-run the grub update config command.  
+Now you should be able to reboot the system and choose the newly installed archlinux and continue system configuration
 
 <details>
   <summary>Example Alphalinux full install grub menuconfig (edit ```/etc/grub.d/40_custom```)</summary>
