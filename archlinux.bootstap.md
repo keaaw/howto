@@ -13,16 +13,19 @@
   Ubuntu this is done with ```sudo update-grub```)  
   https://wiki.archlinux.org/title/Multiboot_USB_drive#Arch_Linux  
   
-  Example menuconfig (edit ```/etc/grub.d/40_custom```)
+<details>
+  <summary>Example menuconfig (edit ```/etc/grub.d/40_custom```)</summary>
   ```
-  menuentry '[loopback]archlinux-2020.10.01-x86_64.iso' {
-	set isofile='/boot/iso/archlinux-2020.10.01-x86_64.iso'
-	loopback loop $isofile
-	linux (loop)/arch/boot/x86_64/vmlinuz-linux img_dev=$imgdevpath img_loop=$isofile earlymodules=loop
-	initrd (loop)/arch/boot/intel-ucode.img (loop)/arch/boot/amd-ucode.img (loop)/arch/boot/x86_64/initramfs-linux.img
-  }
-  ```
-  
+  menuentry "archlinux-2023.02.01-x86_64.iso" {
+  insmod ext2
+  set isofile="/kmw/Downloads/archlinux-2023.02.01-x86_64.iso"
+  loopback loop (hd0,5)$isofile
+  linux (loop)/arch/boot/x86_64/vmlinuz-linux archisolabel=ARCH_202103 img_dev=/dev/sda5 img_loop=$isofile earlymodules=loop
+  initrd (loop)/arch/boot/x86_64/initramfs-linux.img
+}
+```
+</details>
+
 ### Follow the installation guide instructions
 This will create a bootable archlinux system, but you won't have a working network, make sure while still on the installation system to download network
 management packages, e.g., ```iwd```, and an editor, like ```vim```.  The base archlinux has far fewer packages by default than the installation ISO!
@@ -34,7 +37,29 @@ https://wiki.archlinux.org/title/GRUB
 
 From these instructions the only part we need is ```# grub-mkconfig -o /boot/grub/grub.cfg```   Copy the main grub menuentry from this new ```/boot/grub/grub.cfg``` to the primary linux's ```/etc/grub.d/40_custom``` and re-run the grub update config command.  Now you should be able to reboot the system and choose the newly installed archlinux and continue system configuration
 
-[archlinux-full-install-grub-menu.md]
+<details>
+  <summary>Example Alphalinux full install grub menuconfig (edit ```/etc/grub.d/40_custom```)</summary>
+ ```
+menuentry 'Arch Linux' --class arch --class gnu-linux --class gnu --class os $menuentry_id_option 'gnulinux-simple-6792ad20-8fda-493f-ab84-14f8c6146bfc' {
+	load_video
+	set gfxpayload=keep
+	insmod gzio
+	insmod part_gpt
+	insmod ext2
+	set root='hd0,gpt6'
+	if [ x$feature_platform_search_hint = xy ]; then
+	  search --no-floppy --fs-uuid --set=root --hint-bios=hd0,gpt6 --hint-efi=hd0,gpt6 --hint-baremetal=ahci0,gpt6  6792ad20-8fda-493f-ab84-14f8c6146bfc
+	else
+	  search --no-floppy --fs-uuid --set=root 6792ad20-8fda-493f-ab84-14f8c6146bfc
+	fi
+	echo	'Loading Linux linux ...'
+	linux	/boot/vmlinuz-linux root=UUID=6792ad20-8fda-493f-ab84-14f8c6146bfc rw  loglevel=3 quiet
+	echo	'Loading initial ramdisk ...'
+	initrd	/boot/initramfs-linux.img
+}
+```
+
+</details>
 
 ### Enable basic services / networking
 If you included a network manager during the installation process, you should be able to configure and enable it now.  I used [iwd](https://wiki.archlinux.org/title/Iwd#top-page)
