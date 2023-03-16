@@ -88,7 +88,9 @@ If you choose systemd-resolved as the DNS service, remember to enable it!
 # Bootstrap an archlinux system from scratch (first install, UEFI, GPT, GRUB)
 Followed the archlinux install instructions, including installation of bootloader, using all the recommended settings and locations.   My laptop did not find the bootloader.
 
-I started by comparing the working external USB boot partition to the new non-working GPT one on the SSD.  In the EFI partition, I removed the "EFI" partition label (setting it empty), as this can be a problem on some systems, but it did not help.
+I started by comparing the working external USB boot partition to the new non-working GPT one on the SSD.    I noticed that the working system had an EFI/BOOT folder with a BOOTX64.EFI file, while the non-working one had EFI/grub/grubx64.efi
+
+Then, in the EFI partition, I removed the "EFI" partition label (setting it empty), as this can be a problem on some systems, but it did not help.
 
 Then I found this, which fixed it: https://wiki.archlinux.org/title/GRUB#Default/fallback_boot_path
 
@@ -96,6 +98,30 @@ Then I found this, which fixed it: https://wiki.archlinux.org/title/GRUB#Default
 # mv esp/EFI/grub esp/EFI/BOOT
 # mv esp/EFI/BOOT/grubx64.efi esp/EFI/BOOT/BOOTX64.EFI
 ```
+
+Alternatively, this command probably would have set it up correctly (the key is the `--removable` parameter)
+
+```
+# grub-install --target=x86_64-efi --efi-directory=esp --removable
+```
+
+## Install/configure
+### Network
+During the archlinux live ISO install, I installed the iwd package and configured it to enable network configuration, but required services were not yet enabled.  By default, iwd uses systemd-resolved, but that also needs to be enabled
+
+```
+# systemctl enable systemd-resolved
+# systemctl start systemd-resolved
+# systemctl enable iwd
+# systemctl start iwd
+```
+
+Then I ran iwctl, scanned for the wireless network, and connected to it.  After that, and installing openssh
+```
+# pacman -S openssh
+```
+name resolution and networking is up and running
+
 
  
 
