@@ -1,5 +1,7 @@
-# Bootstrap an archlinux system from scratch
-(As a secondary linux on a system with an existing bootloader/linux installation.  This means no mounting or formatting of the EFI partition and no bootloader installation!)
+# Bootstrap an archlinux system from scratch (secondary)
+(As a secondary linux on a system with an existing EFI/MBR bootloader/linux installation.  This means no mounting or formatting of the EFI partition and no bootloader installation!)
+
+See the next section for how I troubleshooted a EFI/GPT/GRUB archlinx installation on a brand new SSD
 
 ## Install
  https://wiki.archlinux.org/title/installation_guide  
@@ -83,7 +85,17 @@ If you choose systemd-resolved as the DNS service, remember to enable it!
 ```
 # systemctl enable systemd-resolved
 ```
+# Bootstrap an archlinux system from scratch (first install, UEFI, GPT, GRUB)
+Followed the archlinux install instructions, including installation of bootloader, using all the recommended settings and locations.   My laptop did not find the bootloader.
 
+I started by comparing the working external USB boot partition to the new non-working GPT one on the SSD.  In the EFI partition, I removed the "EFI" partition label (setting it empty), as this can be a problem on some systems, but it did not help.
+
+Then I found this, which fixed it: https://wiki.archlinux.org/title/GRUB#Default/fallback_boot_path
+
+```
+# mv esp/EFI/grub esp/EFI/BOOT
+# mv esp/EFI/BOOT/grubx64.efi esp/EFI/BOOT/BOOTX64.EFI
+```
 
  
 
