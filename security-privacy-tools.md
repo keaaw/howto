@@ -39,4 +39,9 @@ openssl x509 -in wf.crt -outform DER -out wf.der
 ```
 shasum -inform DER -in wf.der
 ```
+## Web Tools
+### Javascript ASN decoder
+```
+https://lapo.it/asn1js/
+```
 
