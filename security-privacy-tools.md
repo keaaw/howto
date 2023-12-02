@@ -44,4 +44,9 @@ shasum -inform DER -in wf.der
 ```
 https://lapo.it/asn1js/
 ```
-
+# gpg
+### Show the subkeys contained in a key file without importing it:
+```
+gpg --show-keys <file>
+gpg --show-keys --with-subkey-fingerprints <file> # if with-subkey-fingerpints is not in ~/.gnupg/gpg.conf
+```
