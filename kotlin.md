@@ -1,4 +1,4 @@
-# Kotlin and java env language flow tips/tricks
+# Kotlin and java env language flow tps/tricks
 ### install kotlin Ubuntu (SDKMAN use preferred)
 ```
 sudo snap install --classic kotlin
@@ -13,4 +13,9 @@ visit https://sdkman.io for install info
 ```
 kotlinc prog.kt -include-runtime -d prog.jar
 java -jar prog.jar
+```
+
+### online playground
+```
+https://play.kotlinlang.org/
 ```
