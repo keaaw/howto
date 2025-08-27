@@ -5,6 +5,12 @@
 https://www.youtube.com/watch?v=skW3clVG5Fo
 ```
 
+### neovim as IDE (good series, also on shells, terms, tmux, etc)
+```
+From 0 to IDE in NEOVIM from scratch | FREE COURSE // EP 1
+https://www.youtube.com/watch?v=zHTeCSVAFNY
+```
+
 ### built-in explorer
 ```
 :Explore
