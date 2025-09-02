@@ -76,6 +76,12 @@ lua/mymodule.lua within each directory in the runtimepath.
 lua/mymodule/init.lua within each directory in the runtimepath.
 If the module name contains dots (e.g., require("myfolder.mymodule")), Neovim interprets these as directory separators, searching for: lua/myfolder/mymodule.lua and lua/myfolder/mymodule/init.lua.
 
+### nvim functions for listing various things
+```
+:echo nvim_list_<TAB>
+:echo nvim_list_runtime_paths()
+```
+
 # TODO
 ### command line syntax 
 ### set up language server
