@@ -69,6 +69,13 @@ vim.g.snacks_animate_indent = false
 which is the equivalent of :lua print(vim.inspect(<lua expr>))
 ```
 
+### behavior of require()
+Neovim's require() function, used for loading Lua modules, operates by searching for files within directories specified in Neovim's runtimepath and then within the lua/ subdirectory of those locations.
+Specifically, when a module is `require()`d (e.g., require("mymodule")), Neovim will look for:
+lua/mymodule.lua within each directory in the runtimepath.
+lua/mymodule/init.lua within each directory in the runtimepath.
+If the module name contains dots (e.g., require("myfolder.mymodule")), Neovim interprets these as directory separators, searching for: lua/myfolder/mymodule.lua and lua/myfolder/mymodule/init.lua.
+
 # TODO
 ### command line syntax 
 ### set up language server
