@@ -58,6 +58,17 @@ or
 vim.g.snacks_animate_indent = false
 ```
 
+### evaluate and print a vimscript expression
+```
+:echo <expr>
+```
+
+### evaluate and pretty print a lua expression
+```
+:= <lua expr>
+which is the equivalent of :lua print(vim.inspect(<lua expr>))
+```
+
 # TODO
 ### command line syntax 
 ### set up language server
