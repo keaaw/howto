@@ -82,6 +82,18 @@ If the module name contains dots (e.g., require("myfolder.mymodule")), Neovim in
 :echo nvim_list_runtime_paths()
 ```
 
+### notes from TJ Devries's YT "advent of neovim" videos
+vim.fn.xxx() functions are built-in to vim from vim-script days which means you can call them via ":echo xxx()"
+You can exit the :Lazy dialog with "q"
+
+### manipulating the file path
+Note that if nvim's :pwd is not the wd of the file you're editing, ":w anotherfile" won't work as expected, it will 
+produce a file "anotherfile"  in nvim's CWD.
+:echo expand("%")      current file
+:echo expand("%:p")    full path of current file
+:echo expand("%:p:h")  full path up to (and including) parent directory of current file
+:w %:p:h/another-file  write contents of current file to sibling file in same directory as %
+
 # TODO
 ### command line syntax 
 ### set up language server
