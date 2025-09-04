@@ -94,6 +94,27 @@ produce a file "anotherfile"  in nvim's CWD.
 :echo expand("%:p:h")  full path up to (and including) parent directory of current file
 :w %:p:h/another-file  write contents of current file to sibling file in same directory as %
 
+### put the :messages output into a buffer
+:new
+:put = execute('messages')
+(works for any command that can be executed
+
+### problems loading plugins, e.g., in lazy.nvim
+check carefully the respository spelling, I spent an hour debugging
+why this didn't work
+```
+return {
+	{
+		"nvim-mini/mini.nvm", -- <<<< notice ".nvm" instead of ".nvim"
+		config = function()
+			local statusline = require 'mini.statusline'
+			statusline.setup { use_icons = true }
+		end
+	}
+}
+```
+switching to "git@github.com:" prefix for SSH authentication changed the error message from "couldn't propmt for user name"
+to "repository not found" which should have really tipped me off!
 # TODO
 ### command line syntax 
 ### set up language server
