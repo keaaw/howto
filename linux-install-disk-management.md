@@ -73,3 +73,41 @@ Device          Start        End   Sectors   Size Type
 >>> part_end_sector
 1102585855
 ```
+### UUIDs
+There are : disk, partition, partition type, and file system UUIDs.
+Usually in grub.cfg you see search.fs_uuid and this references a filesystem uuid
+### list your disk UUIDs and partitions
+lsblk -o NAME,FSTYPE,LABEL,SIZE,MOUNTPOINT,PARTTYPE,PARTFLAGS,UUID
+ESP (efi system partition) partition type is C12A7328-F81F-11D2-BA4B-00A0C93EC93B
+partition type for linux filesystem 0fc63daf-8483-4772-8e79-3d69d8477de6
+partition type linux swap 0657FD6D-A4AB-43C4-84E5-0933C84B4F4F
+
+
+### how to find the grub.cfg used to boot your system
+locate the ESP
+```
+lsblk -o NAME,FSTYPE,LABEL,SIZE,MOUNTPOINT,PARTTYPE,PARTFLAGS,UUID
+```
+mount that partition (puppy linux is good for this, it has icons on the desktop for each partition, single click any of them
+and it mounts the partition on /mnt/...)
+
+look in EFI/<distribution>/grub.cfg
+for example, EFI/ubuntu/grub.cfg
+
+This is usually a stub that refers to the "real" full version of the config file.
+
+For example:
+```
+search.fs_uuid 7d1a0fca-68eb-4b12-b3ca-fefa80527117 root 
+set prefix=($root)'/boot/grub'
+configfile $prefix/grub.cfg
+```
+check the output of lsblk (above) and see:
+```
+└─nvme0n1p5 ext4 328.8G 0fc63daf-8483-4772-8e79-3d69d8477de4 0fede9c2-6314-46da-9d11-ec13652c550b 7d1a0fca-68eb-4b12-b3ca-fefa80527117
+```
+This means /dev/nvme0n1p5 (5th partition of the SSD drive) holds a /boot/grub/grub.cfg file that is what the system uses to boot
+
+
+
+

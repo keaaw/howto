@@ -115,6 +115,9 @@ return {
 ```
 switching to "git@github.com:" prefix for SSH authentication changed the error message from "couldn't propmt for user name"
 to "repository not found" which should have really tipped me off!
+### run neovim with a specific ~/.config directory (nvimexample in this case)
+NVIM_APPNAME=nvimexample ~/3rd/neovim/bin/nvim
+
 # TODO
 ### command line syntax 
 ### set up language server
