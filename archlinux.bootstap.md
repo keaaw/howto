@@ -122,6 +122,42 @@ Then I ran iwctl, scanned for the wireless network, and connected to it.  After 
 ```
 name resolution and networking is up and running
 
+### volatile overlay boot of archlinux (no writeable root, /tmp, /run, etc.)
+followed https://bbs.archlinux.org/viewtopic.php?id=308287 and chatgpt
+create a file sd-volatile
+```
+#!/bin/bash
+
+build() {
+    add_module "overlay"
+
+    add_systemd_unit "systemd-volatile-root.service"
+}
+
+help() {
+    cat <<HELPEOF
+This hook installs the necessary infrastructure for systemd.volatile to work.
+HELPEOF
+}
+
+# vim: set ft=sh ts=4 sw=4 et:
+```
+copy it to /usr/lib/initcpio/install/sd-volatile (instructions have a typo, they wrote sd-vconsole)
+edit /etc/mkinitcpio.conf
+add 'systemd sd-volatile' to hooks line:
+```
+HOOKS=(base systemd sd-volatile autodetect microcode modconf kms keyboard sd-vconsole block sd-encrypt filesystems fsck)
+```
+then run mkinitcpio:
+```
+cd /tmp
+mkinitcpio # dry-run, doesn't output anything
+mkinitcpio -g new-initramfs-linux.img
+sudo cp new-initramfs-linux.img /boot
+```
+update grub.cfg to use new initramfs-linux.img
+add parameter "systemd.volatile=overlay" to the linux line kernel parameters
+
 
  
 
