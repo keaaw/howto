@@ -108,6 +108,7 @@ check the output of lsblk (above) and see:
 ```
 This means /dev/nvme0n1p5 (5th partition of the SSD drive) holds a /boot/grub/grub.cfg file that is what the system uses to boot
 
-
+### findmnt is useful
+% findmnt lists all mounted file systems, easier to read than "mount" output
 
 
