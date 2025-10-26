@@ -158,6 +158,18 @@ sudo cp new-initramfs-linux.img /boot
 update grub.cfg to use new initramfs-linux.img
 add parameter "systemd.volatile=overlay" to the linux line kernel parameters
 
+### configure wired networking
 
+added symlink to directory /etc/systemd/network/
+lrwxrwxrwx 1 root   52 Oct 12 05:16 89-ethernet.network -> /usr/lib/systemd/network/89-ethernet.network.example
+didn't need to edit this
+% systemctl start systemd-networkd
+% systemctl enable systemd-networkd
+
+### problems with WKD server reports failure on fetching keys
+add this line to /etc/resolv.conf:
+```
+nameserver 1.1.1.1 # cloudfare DNS
+```
  
 
