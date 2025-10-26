@@ -172,4 +172,21 @@ add this line to /etc/resolv.conf:
 nameserver 1.1.1.1 # cloudfare DNS
 ```
  
+### change caps to ctrl in X:
+put this into ~/.xinitrc
+```
+setxkbmap -option caps:ctrl_modifier
+```
 
+### change caps to ctrl in boot tty console:
+find key map (probably /usr/share/kbd/keymaps/i386/qwerty/us.map.gz)
+decompress it, save locally to mykeymap.map
+edit it, change "keycode 58 = Caps" to "= Control"
+save
+compress it
+put it in /usr/local/share/kbd/keymaps/my.keymap.gz
+edit /etc/vconsole.conf
+```
+KEYMAP=/usr/local/share/kbd/keymaps/mykeymap.map.gz
+```
+reboot
