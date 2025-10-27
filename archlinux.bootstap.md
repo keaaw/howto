@@ -190,3 +190,12 @@ edit /etc/vconsole.conf
 KEYMAP=/usr/local/share/kbd/keymaps/mykeymap.map.gz
 ```
 reboot
+
+### install nvidia drivers
+packages nvidia-dkms nvidia-utilities linux-headers
+didn't have to change any boot or grub files or mkinitcpio
+the nvidia-dkms package does this itself
+did need to remove nomodeset
+startx didn't work until I installed an xterm
+also icewm, firefox, tested 3d with glmark2, glxgears
+
