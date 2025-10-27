@@ -1,0 +1,39 @@
+lsblk
+cfdisk /dev/nvme0n1
+[Run fdisk afterwards if the table entries are not in order]
+Assuming u have /dev/nvme0n1p1 as efi and p2 as efi
+mkfs.fat -F32 /dev/nvme0n1p1
+mkfs.ext4 /dev/nvme0n1p2
+mount /dev/nvme0n1p2 /mnt
+mkdir /mnt/boot
+mount /dev/nvme0n1p1 /mnt/boot
+lsblk
+pacstrap /mnt base linux linux-firmware sof-firmware base-devel grub efibootmgr vim networkmanager
+genfstab /mnt [verify that everything is correct]
+genfstab /mnt > /mnt/etc/fstab
+arch-chroot /mnt
+ln -sf /usr/share/zoneinfo/Europe/Prague /etc/localtime [create symbolic link]
+date
+hwclock --systohc
+vim /etc/locale.gen
+Uncomment #en_US.UTF-8 UTF-8
+Save
+locale-gen
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+echo "KEYMAP=us" > /etc/vconsole.conf
+echo "archlinux" > /etc/hostname
+passwd
+[Set a password for root]
+useradd -m -G wheel -s /bin/bash [user]
+passwd [user]
+[Set password for [user]]
+EDITOR=vim visudo
+Scroll to the bottom and uncomment
+#%wheel ALL=(ALL) ALL
+save
+systemctl enable NetworkManager
+#mkinitcpio -P 
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+grub-mkconfig -o /boot/grub/grub.cfg
+sudo pacman -S systemd-sysvcompat
+
