@@ -1,0 +1,204 @@
+Summary of the plan
+
+Identify your current swap device/file.
+
+Turn swap off.
+
+Remove/comment old fstab entry.
+
+Convert the swap partition into a dm-crypt mapping that uses a random key.
+
+Make the mapping a swap device (mkswap) and enable it.
+
+Add persistent entries to /etc/crypttab and /etc/fstab so encrypted swap comes up at boot.
+
+Test and reboot. 
+help.ubuntu.com
++1
+
+Before you start — useful commands to inspect current state
+
+Run these and read the output so you know which device is swap:
+
+# shows active swaps
+swapon --show
+
+# lists block devices and partition names
+lsblk -f
+
+# show filesystems/uuids
+sudo blkid
+
+
+From swapon --show you’ll get the partition (e.g. /dev/sda3) or swapfile path. If you have a swap file instead of a partition you should either create an encrypted swap file on an encrypted filesystem or create a swap partition — this guide assumes a swap partition. 
+Server Fault
+
+Step-by-step (commands to run)
+
+Replace /dev/sdXN below with your actual swap partition (e.g. /dev/sda3). If you prefer using UUIDs use the blkid output.
+
+1) Install tools (if not present)
+sudo apt update
+sudo apt install cryptsetup
+
+2) Turn off swap
+sudo swapoff -a
+# verify none active
+swapon --show
+
+3) Remove or comment any old swap entry in /etc/fstab
+
+Open /etc/fstab in an editor and comment out the existing swap line (or use sed). Example (manual):
+
+sudo cp /etc/fstab /etc/fstab.bak
+sudo nano /etc/fstab
+# comment out the line with /dev/sdXN or UUID=... that mounts swap
+
+
+Or to comment automatically (careful: verify after running):
+
+sudo cp /etc/fstab /etc/fstab.bak
+sudo sed -i.bak '/[[:space:]]swap[[:space:]]/ s/^/#/' /etc/fstab
+
+4) (Optional sanity) Wipe the partition header — recommended if reusing an old swap
+
+This is optional but ensures no leftover metadata:
+
+# WARNING: this will overwrite beginning of the partition
+sudo dd if=/dev/zero of=/dev/sdXN bs=1M count=10
+
+5) Create an encrypted mapping that uses a random key (plain dm-crypt)
+
+This is the common swap approach: open the device as a plain dm-crypt device with a random key so the key is different on every boot (prevents data leakage between reboots).
+
+# create a mapping named cryptswap1 (temporary until we add crypttab)
+sudo cryptsetup open --type plain -d /dev/urandom /dev/sdXN cryptswap1
+
+
+If the above succeeds, the mapped device path is /dev/mapper/cryptswap1. 
+Server Fault
++1
+
+6) Make the mapped device a swap area and enable it
+sudo mkswap /dev/mapper/cryptswap1
+sudo swapon /dev/mapper/cryptswap1
+
+# verify
+swapon --show
+
+7) Make it persistent across boots — edit /etc/crypttab and /etc/fstab
+
+a) Get a stable reference for the raw partition (use UUID):
+
+sudo blkid /dev/sdXN
+# copy the UUID value (e.g. UUID="0123-ABCD")
+
+
+b) Add a line to /etc/crypttab so systemd opens the mapping at boot using /dev/urandom:
+Open /etc/crypttab:
+
+# <name>   <device>                    <keyfile-or-@none>   <options>
+cryptswap1  UUID=your-partition-uuid   /dev/urandom         cipher=aes-xts-plain64:sha256,size=256,swap
+
+
+Example (replace your-partition-uuid with the actual UUID):
+
+cryptswap1 UUID=01234567-89ab-cdef-0123-456789abcdef /dev/urandom cipher=aes-xts-plain64:sha256,size=256,swap
+
+
+c) Add /dev/mapper/cryptswap1 to /etc/fstab:
+
+# <file system>                 <mount point>  <type>  <options>  <dump> <pass>
+/dev/mapper/cryptswap1          none            swap    sw         0      0
+
+
+d) Save files. You can also use systemd-cryptsetup units — systemd will read /etc/crypttab and create the mapping at boot. See Ubuntu docs for exact option names. 
+help.ubuntu.com
++1
+
+8) Reload and test the persistent setup without rebooting
+# reload systemd configs
+sudo systemctl daemon-reload
+
+# try to (re)create mapping from crypttab
+sudo systemctl restart systemd-cryptsetup@cryptswap1.service || true
+
+# ensure swap is active
+sudo swapon --show
+
+
+If the mapping fails, check journalctl -u systemd-cryptsetup@cryptswap1.service and journalctl -b for errors.
+
+9) Reboot and verify
+sudo reboot
+# after reboot:
+swapon --show
+lsblk -f
+cat /proc/swaps
+
+
+You should see /dev/mapper/cryptswap1 as the active swap device.
+
+If you need hibernate (suspend-to-disk)
+
+Hibernation requires the kernel to be able to read the swap region during resume — that means you cannot use the random-key (volatile) method above unless you arrange a persistent key available to initramfs. Typical options:
+
+Use a LUKS mapping for the swap partition with a fixed key/passphrase and include the key in initramfs (more complex, and you must protect the key).
+
+Or use a swapfile on an already-encrypted root filesystem (if root is LUKS, swapfile inherits encryption automatically).
+
+If you want hibernation, follow the Ubuntu docs and AskUbuntu guides for the steps: you will need to add a resume=UUID=... kernel parameter and update the initramfs so the resume device is available early. See Ubuntu community documentation for details and examples. 
+help.ubuntu.com
++1
+
+Troubleshooting tips
+
+If at boot systemd tries to resume from swap before cryptsetup opens the mapping you can see timeouts — check journalctl and ordering of systemd-cryptsetup@*.service. Some systems require adjusting GRUB_CMDLINE_LINUX resume= or ensuring crypttab is processed early. 
+Reddit
++1
+
+If cryptsetup open fails, check kernel messages: dmesg | tail and journalctl -xe.
+
+Double-check that the partition you format is actually the swap partition (you don’t want to overwrite other data). Use lsblk and blkid before dd/mkswap.
+
+Quick pasteable example (replace /dev/sdXN or UUID)
+# inspect
+swapon --show; lsblk -f; sudo blkid
+
+# stop swap
+sudo swapoff -a
+
+# (optional) zero header
+sudo dd if=/dev/zero of=/dev/sdXN bs=1M count=10
+
+# open mapping with random key
+sudo cryptsetup open --type plain -d /dev/urandom /dev/sdXN cryptswap1
+
+# format as swap
+sudo mkswap /dev/mapper/cryptswap1
+
+# enable now
+sudo swapon /dev/mapper/cryptswap1
+swapon --show
+
+# add to crypttab (manual edit recommended)
+# cryptswap1 UUID=<uuid-from-blkid> /dev/urandom cipher=aes-xts-plain64:sha256,size=256,swap
+
+# add to fstab (manual edit):
+# /dev/mapper/cryptswap1 none swap sw 0 0
+
+# reload systemd, test, then reboot
+sudo systemctl daemon-reload
+sudo systemctl restart systemd-cryptsetup@cryptswap1.service || true
+
+Sources / further reading
+
+Ubuntu community instructions for enabling hibernation & encrypted swap. 
+help.ubuntu.com
+
+AskUbuntu threads and examples of adding encrypted swap post-install. 
+Ask Ubuntu
++1
+
+Discussion of making swap encrypted via dm-crypt (random key) for ephemeral swap security. 
+Server Fault
