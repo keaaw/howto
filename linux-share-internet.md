@@ -11,6 +11,9 @@ sudo nft add rule ip filter FORWARD ct state established,related accept
 resolvectl # to find tunnel's DNS server
 # set client's DNS to thet tunnel's DNS IP, this bypasses the tunnel's dport 53 (DNS) filtering policy
 # it uses the FORWARD chain instead of the INPUT chain
+# also works just to use the gateway IP of the subnet, easier, this is usually the default for client machines
+#     on the subnet (like macs), just remove explicit DNS entries and the subnet gateway will be in the DNS server
+#	perhaps grayed out
 
 # server uses nft?
 sudo nft list ruleset
